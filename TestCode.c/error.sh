@@ -1,5 +1,22 @@
 #!/bin/bash
 
+gcc skeleton.c -o output
+
+echo -e "-testing files-"
+
+echo 
+
+
+
+
+
+
+
+
+
+
+
+
 FileName = "ErrorTooShort"
 #This first if statement checks whether the FileName exists 
 if [-f "$FileName"]; then 
