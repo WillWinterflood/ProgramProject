@@ -4,89 +4,114 @@ gcc skeleton.c -o errorchecker
 
 echo -e "~~ Testing for Errors: ~~"
 
-echo -n "Testing for argument errors -"
+ehco -e "~~Argument Error testing: ~~"
 
-echo "no" | ./errorchecker > tmp 
+echo -n "Testing for any argument entered - "
+echo "NoArg" | ./errorchecker 1 < Maze.txt > tmp 
 
-if grep -q "Error: No argument error" tmp; then
-    echo "PASS"
+if grep -q "Error: No Argument entered" tmp; then
+    echo "FAIL"
 else
+    echo "PASS"
+    cat tmp
+fi
+
+#echo "NoArg" | ./errorchecker 1 < Maze.txt > tmp
+
+echo -n "Testing if too many arguments have been entered - "
+echo "Arg>" | ./errorchecker 1 < Maze.txt > tmp 
+
+if grep -q "Error: Too many arguments entered" tmp; then
+    echo "PASS"
+else 
     echo "FAIL"
     cat tmp
 fi
 
+echo -e "~~Testing for File errors: ~~"
 
+echo -n "Testing for invalid filename: - "
+echo "no" | ./errorchecker > tmp 
 
-
-
-
-
-
-
-
-
-
-
-
-FileName = "ErrorTooShort"
-#This first if statement checks whether the FileName exists 
-if [-f "$FileName"]; then 
-    echo "The file '$FileName' exists" 
-    exit 0 
-else 
-    #printing out an error message if the file does not exist 
-    echo "Error: The file '$FileName' does not exist"
-    exit 1
-fi
-
-#These error messages are checking whether the length of the maze is between 5 and 100 characters
-
-CharCount = $(wc -c < "$FileName")
-
-if (CharCount < 5); then 
-    echo "Error: The maze is shorter than 5 characters."
-    exit 1
-fi
-
-if (CharCount > 100); then
-    echo "Error: The maze is above 100 characters."
-    exit 1
-fi
-
-#These error codes check the height of the maze is between 5 and 100 characters
-LineCount = $(wc -1 < "$FileName")
-
-if (LineCount < 5); then
-    echo "Error: The maze is less than 5 characters in height."
-    exit 1
-fi
-
-if (LineCount > 100); then
-    echo "Error: The maze is greater than 100 characters in height."
-    exit 1
-fi
-
-#This error checker is cheking if the file has only hashtags,S,E and spaces 
-
-if grep -qE -v '^[# SE]*$' "$FileName"; then
-    echo "Error: The file doesnt contain the right characters"
-    exit 1
+if grep -q "Error: Invalid filename" tmp; then
+    echo "FAIL"
 else
-    echo "File has valid characters"
-    exit 0
+    echo "PASS"
+    cat tmp
+fi 
+
+echo -n "Checking file existence: - "
+echo "ex" | ./errorchecker > tmp
+
+if grep -q "Error: File not found/ does not exist" tmp; then
+    echo "FAIL"
+else
+    echo "PASS"
+    cat tmp
 fi
 
-#Checking whether they input the correct move
-read -p "AWSD" move 
+echo -n "Checking for too many filenames: - " #Isnt this just argument checking?
+echo ">name" | ./errorchecker > tmp
+#
+echo -n "Checking for mazes with no start: - "
+echo "NoS" | ./errorchecker > tmp
 
-if grep -q "^$move$" "FileName"; then
-    echo "Valid Move"
+if grep -q "Error: This maze does not have a start" tmp; then
+    echo "FAIL"
 else
-    echo "Invalid Move"
+    echo "PASS"
+    cat tmp
+fi
 
+echo -n "Checking for mazes with no end: - "
+echo "NoE" | ./errorchecker > tmp
 
+if grep -q "Error: This maze does not have an end point" tmp; then
+    echo "FAIL"
+else
+    echo "PASS"
+    cat tmp
+fi 
 
+echo -n "Checking that the maze is a rectangle/square: - " 
+echo "srec" | ./errorchecker > tmp
 
+if grep -q "Error: This maze is not a rectangle/square" tmp; then
+    echo "FAIL"
+else
+    echo "PASS"
+    cat tmp
+fi
+
+echo -n "Checking if maze is too big: - "
+echo "big" | ./errorchecker > tmp 
+
+if grep -q "Error: This maze is too big" tmp; then
+    echo "FAIL"
+else
+    echo "PASS"
+    cat tmp
+fi
+
+echo -n "Checking if the maze is too small: - "
+echo "smal" | ./errorchecker > tmp 
+
+if grep -q "Error: This maze is too small" tmp; then
+    echo "PASS"
+else
+    echo "FAIL"
+    cat tmp
+fi 
+
+echo -n "Checking if the maze contains the right characters: - "
+echo "char" | ./errorchecker > tmp 
+
+if grep -q "Error: There are some wrong characters in the maze" tmp; then
+    echo "PASS"
+else
+    echo "FAIL"
+    cat tmp 
+fi 
 
 
 
