@@ -1,10 +1,21 @@
 #!/bin/bash
 
-gcc skeleton.c -o output
+gcc skeleton.c -o errorchecker
 
-echo -e "-testing files-"
+echo -e "~~ Testing for Errors: ~~"
 
-echo 
+echo -n "Testing for argument errors -"
+
+echo "no" | ./errorchecker > tmp 
+
+if grep -q "Error: No argument error" tmp; then
+    echo "PASS"
+else
+    echo "FAIL"
+    cat tmp
+fi
+
+
 
 
 
