@@ -16,7 +16,7 @@ typedef struct {
  
 typedef struct {
     CurrentCoordinates;
-} PlayerPosition
+} PlayerPosition;
 
 typedef struct {
     char Up;
@@ -29,6 +29,6 @@ struct StartingPosition {
 
 }
 
-int main {
+int main(){
 
 }
