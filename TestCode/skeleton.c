@@ -9,7 +9,6 @@ typedef struct {
 typedef struct {
     Coordinates Start;
     Coordinates End;
-    Coordinates Wall;
     int Lines;
     int Chars;
 } Maze;

@@ -16,11 +16,7 @@ else
     cat tmp
 fi
 
-#echo "NoArg" | ./errorchecker 1 < Maze.txt > tmp
-
 echo -n "Testing if too many arguments have been entered - "
-echo "Arg>" | ./errorchecker 1 < Maze.txt > tmp 
-
 if grep -q "Error: Too many arguments entered" tmp; then
     echo "PASS"
 else 
@@ -31,8 +27,7 @@ fi
 echo -e "~~Testing for File errors: ~~"
 
 echo -n "Testing for invalid filename: - "
-echo "no" | ./errorchecker > tmp 
-
+echo "noF" | ./errorchecker > tmp 
 if grep -q "Error: Invalid filename" tmp; then
     echo "FAIL"
 else
@@ -65,17 +60,8 @@ else
     echo "PASS"
     cat tmp
 fi
-
-#echo -n "Checking for mazes with no end: - "
-#echo "NoE" | ./errorchecker > tmp
-
-#if grep -q "Error: This maze does not have an end point" tmp; then
-#    echo "FAIL"
-#else
-#    echo "PASS"
-#    cat tmp
-#fi 
-
+#Note: The maze can be impossible and this is why there is no error code to check for 
+  # there being an end. However, there always to be a start
 echo -n "Checking that the maze is a rectangle/square: - " 
 echo "srec" | ./errorchecker > tmp
 
