@@ -13,10 +13,6 @@ typedef struct {
     int Lines;
     int Chars;
 } Maze;
- 
-typedef struct {
-    CurrentCoordinates;
-} PlayerPosition;
 
 typedef struct {
     char Up;
