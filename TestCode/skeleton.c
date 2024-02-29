@@ -8,9 +8,9 @@ typedef struct {
 
 typedef struct {
     Coordinates Start;
-    Coordinates End;
-    int Lines;
-    int Chars;
+    Coordinates End; // In order to know when the user has crossed the finish line
+    int Lines; // height of the maze
+    int Chars; // width of the maze
 } Maze;
 
 typedef struct {
@@ -18,12 +18,13 @@ typedef struct {
     char Down;
     char Left;
     char Right;
-} Controls;
+} Controls; // all the controls for AWSD
 
 struct StartingPosition {
 
 }
 
 int main(){
+// open the file and run the error checkers to see whether there is anything wrong with the file that is being tested
 
 }
