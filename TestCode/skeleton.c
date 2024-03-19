@@ -1,6 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define MaxDim 100
+#define MinDim 5
+
+#define UP 'W'
+#define UP 'w'
+#define LEFT 'A'
+#define LEFT 'a'
+#define DOWN 'S'
+#define DOWN 's'
+#define RIGHT 'D'
+#define RIGHT 'd'
+//Defining all the user movements 
+
 typedef struct {
     int x;
     int y;
@@ -11,11 +24,24 @@ typedef struct {
 
 typedef struct {
     int Lines; // height of the maze
-    char Chars[101]; // width of the maze
+    int Width; // width of the maze
+    Coordinates Start;
+    Coordinates End;
 } Maze;
 
 
 int CheckFile(char Filename){
+    FILE *file;
+    file = fopen(Filename, "r");
+
+    if (file == NULL) {
+        printf("Error: File cannot open");
+        return 1;
+    }
+    else {
+        printf("File opened correctly");
+    }
+
 // Open the file and run the error checkers to see whether there is anything wrong with the file 
 //  that is being tested
 // This checks errors such as the maze is between 5 and 100 characters in each dimension
@@ -23,6 +49,7 @@ int CheckFile(char Filename){
 }
 
 int IntialiseMaze (char Filename) {
+
     //This will add the text file in which the maze is stored in, and add it to an array in the struct Maze.
     // this will ensure that the maze is loaded therefore meaning we can carry on with the rest of the functions such as CheckPosition
 
@@ -37,6 +64,17 @@ int CheckPostion(int Starty; int Startx; int Endy; int Endx) {
 }
 void GameControls() {
     //Defining the games the controls which can be easily called upon in the main function
+    inputW = getchar();
+    inputA = getchar();
+    inputS = getchar();
+    inputD = getchar();
+
+    printf("Press W to move up...\n");
+    printf("Press A to move left...\n");
+    printf("Press S to move down...\n");
+    printf("Press D to move right...\n");
+
+    
 }
 int CheckMove() {
     //This checks whether the user enters the correct letter to move such as WASD

@@ -47,7 +47,7 @@ fi
 
 echo -n "Checking for too many filenames: - " #Isnt this just argument checking?
 echo ">name" | ./errorchecker > tmp
-#
+
 
 echo -e "~~Testing for Maze errors:~~"
 
