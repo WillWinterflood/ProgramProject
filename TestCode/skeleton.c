@@ -37,6 +37,13 @@ int CheckPostion(int Starty; int Startx; int Endy; int Endx) {
 }
 void GameControls() {
     //Defining the games the controls which can be easily called upon in the main function
+
+    printf("W/w - Move up");
+    printf("A/a - Move left");
+    printf("S/s - Move down");
+    printf("D/d - Move right");
+    printf("Q/q - Quit")
+
 }
 int CheckMove() {
     //This checks whether the user enters the correct letter to move such as WASD
