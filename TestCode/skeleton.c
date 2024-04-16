@@ -15,11 +15,32 @@ typedef struct {
 } Maze;
 
 
-int CheckFile(char Filename){
+int CheckFile(char *Filename){
+printf("Enter Filename: ");
+scanf("%s", Filename);
+
+FILE *file = fopen(Filename, "r");
+
+if (file == NULL) {
+    perror("File is invalid or doesnt exist.");
+    return 0;
+}
 // Open the file and run the error checkers to see whether there is anything wrong with the file 
 //  that is being tested
+int rows = 0;
+int L; //Lines
 // This checks errors such as the maze is between 5 and 100 characters in each dimension
+while ((L = fgetc(file)) != EOF) { //counting the lines in the file (height of maze)
+    if (L == '\n');
+    rows++;
+}
+if (rows < 5) {
+    perror("Maze too short");
+    return 0;
+}
 //Before that is checks that the file is valid and does exist 
+fclose(file);
+return 1;
 }
 
 int IntialiseMaze (char Filename) {
@@ -28,13 +49,14 @@ int IntialiseMaze (char Filename) {
 
 }
 
-int CheckPostion(int Starty; int Startx; int Endy; int Endx) {
+//int CheckPostion(int Starty; int Startx; int Endy; int Endx) {
 //When the file is open the user should be starting at the S position.
 //We are going to check that the co ordinates of the player position is correct as well as the user 
 //starts in the correct position   
 //This function will also check where the user is and checks whether the co ordinates of the player is the same as the end 
 // Essentially chekcing whether the player has finished the maze after every move is inputted.
-}
+//    return 0;
+//}
 void GameControls() {
     //Defining the games the controls which can be easily called upon in the main function
 
@@ -42,19 +64,36 @@ void GameControls() {
     printf("A/a - Move left");
     printf("S/s - Move down");
     printf("D/d - Move right");
-    printf("Q/q - Quit")
+    printf("Q/q - Quit");
 
 }
-int CheckMove() {
-    //This checks whether the user enters the correct letter to move such as WASD
+int CheckMove(char move) {
+    //This checks whether the user enters the correct letter to move such as
+    if (move == 'w' || move == 'W' || move == 'A' || move == 'a' || move == 'S' || move == 's' || move == 'd' || move == 'D') {
+        return 1;
+    }
+    else if (move == 'Q' || move == 'q') {
+        return 2;
+    }
+    else {
+        return 0;
+    }
 }
 
 int main(int argc, char *argv[]) {
 /* Checking the maze is correct aswell as the file being correct is going to be called in thr main fucntion. 
     - after initialising the maze, the game should load with the user in the correct position at the start line 
 
+    */
+    struct Maze;
+    CheckFile();
 
-    -Before the game starts all the error checkers will run through to ensure that the maze is valid 
+
+
+
+
+
+    /*-Before the game starts all the error checkers will run through to ensure that the maze is valid 
       and that it is actually playable for the user and printing for each test whether its a Pass or a Fail
     
     
