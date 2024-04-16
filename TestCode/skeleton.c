@@ -60,11 +60,11 @@ int IntialiseMaze (char Filename) {
 void GameControls() {
     //Defining the games the controls which can be easily called upon in the main function
 
-    printf("W/w - Move up");
-    printf("A/a - Move left");
-    printf("S/s - Move down");
-    printf("D/d - Move right");
-    printf("Q/q - Quit");
+    printf("W/w - Move up\n");
+    printf("A/a - Move left\n");
+    printf("S/s - Move down\n");
+    printf("D/d - Move right\n");
+    printf("Q/q - Quit\n");
 
 }
 int CheckMove(char move) {
@@ -85,13 +85,6 @@ int main(int argc, char *argv[]) {
     - after initialising the maze, the game should load with the user in the correct position at the start line 
 
     */
-    struct Maze;
-    CheckFile();
-
-
-
-
-
 
     /*-Before the game starts all the error checkers will run through to ensure that the maze is valid 
       and that it is actually playable for the user and printing for each test whether its a Pass or a Fail
@@ -100,8 +93,22 @@ int main(int argc, char *argv[]) {
     Game Rules:
     - If the user inputs the wrong move, the game will carry on however the code should output that it is a wrong move
     - Therefore creating a while loop, detecting when the user will input anything other than WASD
+    */
+    char input;
 
-    -The user going into a wall also doesnt restart the maze, the user cannot go through the walls however.
+    GameControls();
+
+    printf("Please start: ");
+    //while the use hasnt finished the maze...
+    scanf("%c", &input);
+    int result = CheckMove(input);
+
+    if (result == 0) {
+        printf("Wrong input, Try again\n");
+    }
+    //end while loop
+    return 0;
+    /*-The user going into a wall also doesnt restart the maze, the user cannot go through the walls however.
     - Therefore to solve this we can make the spaces TRUE and the walls False, and ensure that
        the user can only go through something that is true.
 
