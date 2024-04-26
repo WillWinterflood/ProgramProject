@@ -25,33 +25,27 @@ typedef struct {
 } Maze;
 
 
-int CheckFile(char Filename){
+int checkFile(char *Filename){
 // Open the file and run the error checkers to see whether there is anything wrong with the file 
 //  that is being tested
     FILE *file = fopen(Filename, "r");
     if (file == NULL) {
         perror("Unable to open file");
     }
-    for (int i = 0; i < (*maze).width; i++) {
-        char ch;
-        fscanf(file, " %c", &ch);
-        if (ch != ' ' && ch != '#' && ch != 'S' && ch != 'E') {
-            perror("Wrong characters in file, unacceptable file");
-        }
-    }
 // This checks errors such as the maze is between 5 and 100 characters in each dimension
 //Before that is checks that the file is valid and does exist 
 }
 
-int IntialiseMaze (Maze *maze, int height, int width) {
+int IntialiseMaze (Maze *maze, int height, int width, char *Filename) { //THIS ALLOCATES MEMORY FOR THE FILE
 
     FILE *file = fopen(Filename, "r");
+
     if (file = NULL) {
         perror("Unable to open file");
     }
+    fscanf(file, "%d %d", &(* maze).width, &(* maze).height); //Scans the width and height of the file 
 
-    fscanf(file, "%d %d", &(* maze).width, &(* maze).height);
-
+    
     (*maze).map = (char **)malloc(height * sizeof(char *)); // Allocating memory the size of the height of the map
 
     int i;
@@ -59,14 +53,17 @@ int IntialiseMaze (Maze *maze, int height, int width) {
         (*maze).map[i] = (char *)malloc(width * sizeof(char)); // When there is a row, there is also a column. Therefore, by using a FOR loop we can allocate memory easily
     }
 
-    for (i = 0; i < height; i++) {
-        int n;
-        for (n = 0; n < width; n++) {
-            if ((*maze).map[i][n] = '#') {
-                return 0;
-            }
+    for (int i = 0; i < (*maze).width; i++) {
+        char ch;
+        fscanf(file, " %c", &ch);
+        if (ch != ' ' && ch != '#' && ch != 'S' && ch != 'E') {
+            perror("Wrong characters in file, unacceptable file");
         }
     }
+
+
+    fclose(file);
+    return 1;
     
     //This will add the text file in which the maze is stored in, and add it to an array in the struct Maze.
     // this will ensure that the maze is loaded therefore meaning we can carry on with the rest of the functions such as CheckPosition
@@ -81,7 +78,7 @@ int IntialiseMaze (Maze *maze, int height, int width) {
 // Essentially chekcing whether the player has finished the maze after every move is inputted.
 //    return 0;
 //}
-void GameControls() {
+void GameControls() { //THIS TELLS THE USER WHAT THE GAME CONTROLS ARE
     //Defining the games the controls which can be easily called upon in the main function
 
     printf("W/w - Move up\n");
@@ -91,7 +88,7 @@ void GameControls() {
     printf("Q/q - Quit\n");
 
 }
-int CheckMove(char move) {
+int CheckMove(char move) { //THIS DEFINES EACH MOVE AND IF THE USER PUTS IN A WRONG MOVE 
     //This checks whether the user enters the correct letter to move such as
     if (move == 'w' || move == 'W' || move == 'A' || move == 'a' || move == 'S' || move == 's' || move == 'd' || move == 'D') {
         return 1;
@@ -104,7 +101,7 @@ int CheckMove(char move) {
     }
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) { //MAIN FUNCTION
 
     char Filename[101];
     Maze maze;
