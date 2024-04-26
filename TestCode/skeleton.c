@@ -1,6 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define MaxDim 100
+#define MinDim 5
+
+#define UP 'W'
+#define UP 'w'
+#define LEFT 'A'
+#define LEFT 'a'
+#define DOWN 'S'
+#define DOWN 's'
+#define RIGHT 'D'
+#define RIGHT 'd'
+//Defining all the user movements 
+
 typedef struct {
     int x;
     int y;
@@ -18,32 +31,11 @@ typedef struct {
 } Maze;
 
 
-int CheckFile(char *Filename) { 
-    printf("Enter Filename: ");
-    scanf("%s", Filename);
-    
-    FILE *file = fopen(Filename, "r");
-    
-    if (file == NULL) {
-        perror("File is invalid or doesnt exist.");
-        return 0;
-}
-    // Open the file and run the error checkers to see whether there is anything wrong with the file 
-    //  that is being tested
-    int rows = 0;
-    int h; //height
-    // This checks errors such as the maze is between 5 and 100 characters in each dimension
-    while ((L = fgetc(file)) != EOF) { //counting the lines in the file (height of maze)
-        if (L == '\n');
-        rows++;
-    }
-    if (rows < 5) {
-        perror("Maze too short");
-        return 0;
-    }
-    //Before that is checks that the file is valid and does exist 
-    fclose(file);
-    return 1;
+int CheckFile(char Filename){
+// Open the file and run the error checkers to see whether there is anything wrong with the file 
+//  that is being tested
+// This checks errors such as the maze is between 5 and 100 characters in each dimension
+//Before that is checks that the file is valid and does exist 
 }
 
 int IntialiseMaze (Maze *maze, int height, int width) {
