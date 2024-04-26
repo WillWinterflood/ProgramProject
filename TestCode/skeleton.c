@@ -4,14 +4,7 @@
 #define MaxDim 100
 #define MinDim 5
 
-#define UP 'W'
-#define UP 'w'
-#define LEFT 'A'
-#define LEFT 'a'
-#define DOWN 'S'
-#define DOWN 's'
-#define RIGHT 'D'
-#define RIGHT 'd'
+
 //Defining all the user movements 
 
 typedef struct {
@@ -24,6 +17,7 @@ typedef struct {
 
 
 typedef struct {
+    char **map;
     int height; // height of the maze
     int width; // width of the maze
     Coordinates start;
@@ -34,12 +28,46 @@ typedef struct {
 int CheckFile(char Filename){
 // Open the file and run the error checkers to see whether there is anything wrong with the file 
 //  that is being tested
+    FILE *file = fopen(Filename, "r");
+    if (file == NULL) {
+        perror("Unable to open file");
+    }
+    for (int i = 0; i < (*maze).width; i++) {
+        char ch;
+        fscanf(file, " %c", &ch);
+        if (ch != ' ' && ch != '#' && ch != 'S' && ch != 'E') {
+            perror("Wrong characters in file, unacceptable file");
+        }
+    }
 // This checks errors such as the maze is between 5 and 100 characters in each dimension
 //Before that is checks that the file is valid and does exist 
 }
 
 int IntialiseMaze (Maze *maze, int height, int width) {
-    Maze->map = 
+
+    FILE *file = fopen(Filename, "r");
+    if (file = NULL) {
+        perror("Unable to open file");
+    }
+
+    fscanf(file, "%d %d", &(* maze).width, &(* maze).height);
+
+    (*maze).map = (char **)malloc(height * sizeof(char *)); // Allocating memory the size of the height of the map
+
+    int i;
+    for (i = 0; i < height; i++) {
+        (*maze).map[i] = (char *)malloc(width * sizeof(char)); // When there is a row, there is also a column. Therefore, by using a FOR loop we can allocate memory easily
+    }
+
+    for (i = 0; i < height; i++) {
+        int n;
+        for (n = 0; n < width; n++) {
+            if ((*maze).map[i][n] = '#') {
+                return 0;
+            }
+        }
+    }
+    
     //This will add the text file in which the maze is stored in, and add it to an array in the struct Maze.
     // this will ensure that the maze is loaded therefore meaning we can carry on with the rest of the functions such as CheckPosition
 
