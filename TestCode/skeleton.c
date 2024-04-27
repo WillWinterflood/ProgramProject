@@ -25,13 +25,67 @@ typedef struct {
 } Maze;
 
 
-int checkFile(char *Filename){
+int checkFile(const char *Filename){
+
+    FILE *file = fopen (Filename, "r");
+    if (file == NULL) {
+        fprintf(stderr, "Unable to open file"); //Checking whether the file is available
+    }
 // Open the file and run the error checkers to see whether there is anything wrong with the file 
 //  that is being tested
-    FILE *file = fopen(Filename, "r");
-    if (file == NULL) {
-        perror("Unable to open file");
+
+    char ch;
+    int width = 0;
+    int height = 0;
+    int lineLength = 0;
+
+    int startCount = 0;
+    int endCount = 0;
+
+
+    while((ch = fgetc(file)) != EOF) {
+        if (ch != '\n') {
+            lineLength++;
+        }
+        else {
+            if (lineLength != width) {
+                fprintf(stderr, "Error: Inconsistent width of maze");
+                return 0;
+
+            }
+            height++;
+            lineLength = 0;
+
+        }
+
+
+        if (ch != '#' && ch != 'S' && ch != 'E' && ch != ' ') {
+            
+            fprintf(stderr, "INVALID CHARACTERS IN MAZE");
+            
+            fclose(file);
+            return 0;
+        }   
+
+        if ( ch == 'S') {
+            startCount++;
+        }
+        if (startCount != 1) {
+            fprintf(stderr, "Error: Invalid amount of starts");
+            return 0;
+        }
+
     }
+    fclose(file);
+
+    if (height < MinDim || height > MaxDim || width < MinDim || width > MaxDim) {
+        perror("Error: Dimensions dont meet criteria");
+        return 0;
+    }
+
+    return 1;
+
+    
 // This checks errors such as the maze is between 5 and 100 characters in each dimension
 //Before that is checks that the file is valid and does exist 
 }
@@ -39,31 +93,41 @@ int checkFile(char *Filename){
 int IntialiseMaze (Maze *maze, int height, int width, char *Filename) { //THIS ALLOCATES MEMORY FOR THE FILE
 
     FILE *file = fopen(Filename, "r");
-
-    if (file = NULL) {
-        perror("Unable to open file");
-    }
-    fscanf(file, "%d %d", &(* maze).width, &(* maze).height); //Scans the width and height of the file 
-
-    
-    (*maze).map = (char **)malloc(height * sizeof(char *)); // Allocating memory the size of the height of the map
-
-    int i;
-    for (i = 0; i < height; i++) {
-        (*maze).map[i] = (char *)malloc(width * sizeof(char)); // When there is a row, there is also a column. Therefore, by using a FOR loop we can allocate memory easily
+    if (file == NULL) {
+        fprintf(stderr, "Unable to open file");
+        return 0;
     }
 
-    for (int i = 0; i < (*maze).width; i++) {
-        char ch;
-        fscanf(file, " %c", &ch);
-        if (ch != ' ' && ch != '#' && ch != 'S' && ch != 'E') {
-            perror("Wrong characters in file, unacceptable file");
+    char **map = (char **)malloc(height * sizeof(char *));
+    if (map == NULL) {
+        fprintf(stderr, "Allocation error");
+        return 0;
+    }
+
+    for (int i = 0; i < height; i++) {
+        map[i] = (char *)malloc(width * sizeof(char));
+        
+        for (int x = 0; x < i; x++) {
+            
         }
+        fclose(file);
     }
 
+    Coordinates start, end;
 
-    fclose(file);
-    return 1;
+    for (int n = 0; n < (*maze).height; n++) {
+
+    }
+
+    (*maze).map = map;
+    (*maze).height = height;
+    (*maze).width = width;
+    (*maze).start = start;
+    (*maze).end = end;
+
+    return maze;
+
+
     
     //This will add the text file in which the maze is stored in, and add it to an array in the struct Maze.
     // this will ensure that the maze is loaded therefore meaning we can carry on with the rest of the functions such as CheckPosition
@@ -103,13 +167,31 @@ int CheckMove(char move) { //THIS DEFINES EACH MOVE AND IF THE USER PUTS IN A WR
 
 int main(int argc, char *argv[]) { //MAIN FUNCTION
 
-    char Filename[101];
-    Maze maze;
-    Coordinates User;
+    char Filename[100];
+    printf(" ");
+    scanf("%s", Filename);
 
-    if (!checkFile(Filename)) {
-        return 1;
+    checkFile(Filename);
+
+    Maze *maze = IntialiseMaze(Filename);
+
+    for (int i = 0; i < (*maze).height; i++) {
+        free((*maze).height[i]);
     }
+
+    free((*maze).map);
+    free(maze);
+
+    printf(GameControls());
+
+    if (CheckMove() == 0) {
+        ("Wrong move please enter a valid control");
+    }
+    else if (CheckMove() == 2) {
+        printf("Quitting...\n");
+        exit(0);
+    }
+
 
 
 /* Checking the maze is correct aswell as the file being correct is going to be called in thr main fucntion. 
@@ -125,20 +207,7 @@ int main(int argc, char *argv[]) { //MAIN FUNCTION
     - If the user inputs the wrong move, the game will carry on however the code should output that it is a wrong move
     - Therefore creating a while loop, detecting when the user will input anything other than WASD
     */
-    char input;
 
-    GameControls();
-
-    printf("Please start: ");
-    //while the use hasnt finished the maze...
-    scanf("%c", &input);
-    int result = CheckMove(input);
-
-    if (result == 0) {
-        printf("Wrong input, Try again\n");
-    }
-    //end while loop
-    return 0;
     /*-The user going into a wall also doesnt restart the maze, the user cannot go through the walls however.
     - Therefore to solve this we can make the spaces TRUE and the walls False, and ensure that
        the user can only go through something that is true.
