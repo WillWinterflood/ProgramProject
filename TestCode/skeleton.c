@@ -5,8 +5,6 @@
 #define MinDim 5
 
 
-//Defining all the user movements 
-
 typedef struct {
     int x;
     int y;
@@ -79,7 +77,7 @@ int checkFile(const char *Filename){
     fclose(file);
 
     if (height < MinDim || height > MaxDim || width < MinDim || width > MaxDim) {
-        perror("Error: Dimensions dont meet criteria");
+        perror("Error: Dimensions are either too big or too small! ");
         return 0;
     }
 
@@ -90,7 +88,7 @@ int checkFile(const char *Filename){
 //Before that is checks that the file is valid and does exist 
 }
 
-int IntialiseMaze (Maze *maze, int height, int width, char *Filename) { //THIS ALLOCATES MEMORY FOR THE FILE
+int InitialiseMaze (Maze *maze, int height, int width, char *Filename) { //THIS ALLOCATES MEMORY FOR THE FILE
 
     FILE *file = fopen(Filename, "r");
     if (file == NULL) {
@@ -106,26 +104,53 @@ int IntialiseMaze (Maze *maze, int height, int width, char *Filename) { //THIS A
 
     for (int i = 0; i < height; i++) {
         map[i] = (char *)malloc(width * sizeof(char));
-        
-        for (int x = 0; x < i; x++) {
-            
+        if (map[i] == NULL) {
+            printf("Allocation error");
+            fclose(file);
+            return 0;
+
         }
-        fclose(file);
+    }
+    
+    for (int i = 0; i< height; i++) {
+        fgets(map[i], width + 1, file);
     }
 
-    Coordinates start, end;
-
-    for (int n = 0; n < (*maze).height; n++) {
-
-    }
+    fclose(file);
 
     (*maze).map = map;
     (*maze).height = height;
     (*maze).width = width;
+
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            if (map[y][x] == 'S') {
+                (*maze).start.y = y;
+                (*maze).start.x = x;
+            }
+        } 
+    }
+
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            if (map[y][x] == 'E') {
+                (*maze).end.y = y;
+                (*maze).end.x = x;
+            }
+        }
+    }
+
+    Coordinates start, end;
     (*maze).start = start;
     (*maze).end = end;
+    (*maze).start.x = 0;
+    (*maze).start.y = 0;
+    (*maze).map[0][0] = 'X';
 
-    return maze;
+
+
+    fclose(file);
+    return 1;
 
 
     
@@ -154,6 +179,7 @@ void GameControls() { //THIS TELLS THE USER WHAT THE GAME CONTROLS ARE
 }
 int CheckMove(char move) { //THIS DEFINES EACH MOVE AND IF THE USER PUTS IN A WRONG MOVE 
     //This checks whether the user enters the correct letter to move such as
+
     if (move == 'w' || move == 'W' || move == 'A' || move == 'a' || move == 'S' || move == 's' || move == 'd' || move == 'D') {
         return 1;
     }
@@ -165,6 +191,17 @@ int CheckMove(char move) { //THIS DEFINES EACH MOVE AND IF THE USER PUTS IN A WR
     }
 }
 
+void ShowMaze(Maze *maze) {
+    printf("\n Here is the Maze:\n");
+
+    for (int y = 0; y < (*maze).height; y++) {
+        for (int x = 0; x < (*maze).width; x++) {
+            printf("%c", (*maze).map[y][x]);
+        }
+        printf("\n");
+    }
+}
+
 int main(int argc, char *argv[]) { //MAIN FUNCTION
 
     char Filename[100];
@@ -173,24 +210,60 @@ int main(int argc, char *argv[]) { //MAIN FUNCTION
 
     checkFile(Filename);
 
-    Maze *maze = IntialiseMaze(Filename);
+    int height;
+    int width;
+    Maze *maze = malloc(sizeof(maze));
 
-    for (int i = 0; i < (*maze).height; i++) {
-        free((*maze).height[i]);
-    }
+    Coordinates player = (*maze).start;
 
     free((*maze).map);
     free(maze);
 
-    printf(GameControls());
+    GameControls();
 
-    if (CheckMove() == 0) {
-        ("Wrong move please enter a valid control");
-    }
-    else if (CheckMove() == 2) {
-        printf("Quitting...\n");
-        exit(0);
-    }
+    char move;
+    printf("Enter your moves, (Press M for help): ");
+    scanf("%c", &move);
+
+
+    int x;
+    int y;
+
+
+    x = (*maze).start.x;
+    y = (*maze).start.y;
+
+    switch (move) {
+        case 'W':
+        case 'w':
+            y += 1;
+            break;
+        case 'A':
+        case 'a':
+            x -= 1;
+            break;
+        case 'S':
+        case 's':
+            y -= 1;
+            break;
+        case 'D':
+        case 'd':
+            x += 1;
+            break;
+        case 'm':
+        case 'M':
+            ShowMaze(maze);
+            break;
+        case 'q':
+        case 'Q':
+        break;
+        default:
+            printf("Invlaid move! ");
+            return 0;
+            break;
+
+        }
+
 
 
 
