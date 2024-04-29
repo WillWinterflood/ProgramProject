@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define MaxDim 100
 #define MinDim 5
@@ -68,7 +69,6 @@ int checkFile(const char *Filename){
             return 0;
         }   
 
-        printf("%c", ch);
         if (ch == 'S') {
             startCount++;
           
@@ -81,14 +81,11 @@ int checkFile(const char *Filename){
     if (startCount != 1) {
         fprintf(stderr, "Error: Invalid amount of starts\n");
         printf("%d", startCount);
+        fclose(file);
         return 0;
     }
     //fclose(file);
 
-    if (height < MinDim || height > MaxDim || width < MinDim || width > MaxDim) {
-        perror("Error: Dimensions are either too big or too small! \n");
-        return 0;
-    }
 
     return 1;
 
@@ -106,27 +103,29 @@ int InitialiseMaze (Maze *maze, int height, int width, char *Filename) { //THIS 
     }
 
     maze->map = (char **)malloc(height * sizeof(char *));
-    if (maze == NULL) {
+    if (maze->map == NULL) {
         fprintf(stderr, "Allocation error\n");
+        fclose(file);
         return 0;
     }
-
-    for (int i = 0; i < height; i++) {
-        map[i] = (char *)malloc(width * sizeof(char));
-    
+    int i;
+    for (i = 0; i < height; i++) {
+        maze->map[i] = (char *)malloc(width * sizeof(char));
+      
     }
+  
     
     for (int i = 0; i< height; i++) {
-        fgets(map[i], width + 1, file);
+        fgets(maze->map[i], width + 1, file);
     }
 
-    fclose(file);
+  
 
 
 
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
-            if (map[y][x] == 'S') {
+            if (maze->map[y][x] == 'S') {
                 (*maze).start.y = y;
                 (*maze).start.x = x;
             }
@@ -135,15 +134,18 @@ int InitialiseMaze (Maze *maze, int height, int width, char *Filename) { //THIS 
 
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
-            if (map[y][x] == 'E') {
+            if (maze->map[y][x] == 'E') {
                 (*maze).end.y = y;
                 (*maze).end.x = x;
             }
         }
     }
+    if (height < MinDim || height > MaxDim || width < MinDim || width > MaxDim) {
+        perror("Error: Dimensions are either too big or too small! \n");
+        fclose(file);
+        return 0;
+    }
     
-
-
 
     fclose(file);
     return 1;
@@ -155,14 +157,22 @@ int InitialiseMaze (Maze *maze, int height, int width, char *Filename) { //THIS 
 
 }
 
-//int CheckPostion(int Starty; int Startx; int Endy; int Endx) {
-//When the file is open the user should be starting at the S position.
-//We are going to check that the co ordinates of the player position is correct as well as the user 
-//starts in the correct position   
-//This function will also check where the user is and checks whether the co ordinates of the player is the same as the end 
-// Essentially chekcing whether the player has finished the maze after every move is inputted.
-//    return 0;
-//}
+void freeMaze (Maze *maze) {
+    if (maze->map != NULL) {
+        for (int i = 0; i < (*maze).height; i++) {
+            free(maze->map[i]);
+            maze->map[i] = NULL;
+        }
+
+        free(maze->map);
+        maze->map = NULL;
+    }
+
+    free(maze);
+    maze = NULL;
+}
+
+
 void GameControls() { //THIS TELLS THE USER WHAT THE GAME CONTROLS ARE
     //Defining the games the controls which can be easily called upon in the main function
 
@@ -209,14 +219,18 @@ void ShowMaze(Maze *maze, Coordinates *player) {
 }
 
 int main(int argc, char *argv[]) { //MAIN FUNCTION
-
     char Filename[100];
     Coordinates *player;
+    char move;
+    int height = 5;
+    int width = 30;
 
     if (argc != 2) {
         printf("Usage: %s <filename>\n", argv[0]);
         return EXIT_ARG_ERROR;
     }
+
+    strcpy(Filename, argv[1]);
 
     if(checkFile(argv[1]) == 0) {
         printf("Error: Bad filename\n");
@@ -225,17 +239,16 @@ int main(int argc, char *argv[]) { //MAIN FUNCTION
 
     checkFile(Filename);
 
-    int height;
-    int width;
-    Maze *maze = malloc(sizeof(maze));
+    Maze maze;
+    if (!InitialiseMaze(&maze, height, width, Filename)) {
+        printf("Error Initialising the maze");
+        return EXIT_MAZE_ERROR;
+    }
 
-
-    free((*maze).map);
-    free(maze);
 
     GameControls();
 
-    char move;
+
     printf("Enter your moves, (Press M for help): ");
     scanf("%c", &move);
 
@@ -244,8 +257,8 @@ int main(int argc, char *argv[]) { //MAIN FUNCTION
     int y;
 
 
-    x = (*maze).start.x;
-    y = (*maze).start.y;
+    x = maze.start.x;
+    y = maze.start.y;
 
     switch (move) {
         case 'W':
@@ -266,20 +279,35 @@ int main(int argc, char *argv[]) { //MAIN FUNCTION
             break;
         case 'm':
         case 'M':
-            ShowMaze(maze, player);
+            ShowMaze(&maze, player);
             break;
         case 'q':
         case 'Q':
+        return EXIT_SUCCESS;
         break;
         default:
-            printf("Invlaid move! ");
+            printf("Invlaid move!\n");
             return 0;
-            break;
+            
 
         }
 
+        if (x < 0 || y < 0 || x >= maze.width || y >= maze.height || maze.map[y][x] == '#') {
+            printf("Error: Invalid move\n");
+        }
+        if (x == maze.end.x && y == maze.end.y) {
+            printf("Congrats, you have made it through!\n");
+            return EXIT_SUCCESS;
+        }
+
+        for (int i = 0; i < maze.height; i++) {
+           freeMaze(&maze);
+        }
 
 
+   
+
+    return EXIT_SUCCESS;
 
 /* Checking the maze is correct aswell as the file being correct is going to be called in thr main fucntion. 
     - after initialising the maze, the game should load with the user in the correct position at the start line 
