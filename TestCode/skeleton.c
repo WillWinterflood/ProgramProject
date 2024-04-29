@@ -4,6 +4,10 @@
 #define MaxDim 100
 #define MinDim 5
 
+#define EXIT_SUCCESS 0
+#define EXIT_ARG_ERROR 1
+#define EXIT_FILE_ERROR 2
+#define EXIT_MAZE_ERROR 3
 
 typedef struct {
     int x;
@@ -27,16 +31,15 @@ int checkFile(const char *Filename){
 
     FILE *file = fopen (Filename, "r");
     if (file == NULL) {
-        fprintf(stderr, "Unable to open file"); //Checking whether the file is available
+        fprintf(stderr, "Unable to open file\n"); //Checking whether the file is available
     }
 // Open the file and run the error checkers to see whether there is anything wrong with the file 
 //  that is being tested
 
     char ch;
-    int width = 0;
     int height = 0;
     int lineLength = 0;
-
+    int width = 0;
     int startCount = 0;
     int endCount = 0;
 
@@ -46,38 +49,44 @@ int checkFile(const char *Filename){
             lineLength++;
         }
         else {
-            if (lineLength != width) {
-                fprintf(stderr, "Error: Inconsistent width of maze");
-                return 0;
+            width = lineLength;
+            //if (lineLength != width) {
+                //fprintf(stderr, "Error: Inconsistent width of maze\n");
 
-            }
+            //}
             height++;
             lineLength = 0;
 
         }
 
 
-        if (ch != '#' && ch != 'S' && ch != 'E' && ch != ' ') {
+        if (ch != '#' && ch != 'S' && ch != 'E' && ch != ' ' && ch != '\n') {
             
-            fprintf(stderr, "INVALID CHARACTERS IN MAZE");
+            fprintf(stderr, "INVALID CHARACTERS IN MAZE\n");
             
             fclose(file);
             return 0;
         }   
 
-        if ( ch == 'S') {
+        printf("%c", ch);
+        if (ch == 'S') {
             startCount++;
+          
         }
-        if (startCount != 1) {
-            fprintf(stderr, "Error: Invalid amount of starts");
-            return 0;
-        }
+
+
+      
 
     }
-    fclose(file);
+    if (startCount != 1) {
+        fprintf(stderr, "Error: Invalid amount of starts\n");
+        printf("%d", startCount);
+        return 0;
+    }
+    //fclose(file);
 
     if (height < MinDim || height > MaxDim || width < MinDim || width > MaxDim) {
-        perror("Error: Dimensions are either too big or too small! ");
+        perror("Error: Dimensions are either too big or too small! \n");
         return 0;
     }
 
@@ -92,24 +101,19 @@ int InitialiseMaze (Maze *maze, int height, int width, char *Filename) { //THIS 
 
     FILE *file = fopen(Filename, "r");
     if (file == NULL) {
-        fprintf(stderr, "Unable to open file");
+        fprintf(stderr, "Unable to open file\n");
         return 0;
     }
 
-    char **map = (char **)malloc(height * sizeof(char *));
-    if (map == NULL) {
-        fprintf(stderr, "Allocation error");
+    maze->map = (char **)malloc(height * sizeof(char *));
+    if (maze == NULL) {
+        fprintf(stderr, "Allocation error\n");
         return 0;
     }
 
     for (int i = 0; i < height; i++) {
         map[i] = (char *)malloc(width * sizeof(char));
-        if (map[i] == NULL) {
-            printf("Allocation error");
-            fclose(file);
-            return 0;
-
-        }
+    
     }
     
     for (int i = 0; i< height; i++) {
@@ -118,9 +122,7 @@ int InitialiseMaze (Maze *maze, int height, int width, char *Filename) { //THIS 
 
     fclose(file);
 
-    (*maze).map = map;
-    (*maze).height = height;
-    (*maze).width = width;
+
 
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
@@ -139,13 +141,7 @@ int InitialiseMaze (Maze *maze, int height, int width, char *Filename) { //THIS 
             }
         }
     }
-
-    Coordinates start, end;
-    (*maze).start = start;
-    (*maze).end = end;
-    (*maze).start.x = 0;
-    (*maze).start.y = 0;
-    (*maze).map[0][0] = 'X';
+    
 
 
 
@@ -191,13 +187,23 @@ int CheckMove(char move) { //THIS DEFINES EACH MOVE AND IF THE USER PUTS IN A WR
     }
 }
 
-void ShowMaze(Maze *maze) {
-    printf("\n Here is the Maze:\n");
+void ShowMaze(Maze *maze, Coordinates *player) {
+
+    printf("\n");
 
     for (int y = 0; y < (*maze).height; y++) {
+
         for (int x = 0; x < (*maze).width; x++) {
-            printf("%c", (*maze).map[y][x]);
-        }
+
+            if (player->x == x && player->y == y) {
+
+                printf("X");
+
+            }
+            else { 
+
+                printf("%c", (*maze).map[y][x]);
+        }   }
         printf("\n");
     }
 }
@@ -205,8 +211,17 @@ void ShowMaze(Maze *maze) {
 int main(int argc, char *argv[]) { //MAIN FUNCTION
 
     char Filename[100];
-    printf(" ");
-    scanf("%s", Filename);
+    Coordinates *player;
+
+    if (argc != 2) {
+        printf("Usage: %s <filename>\n", argv[0]);
+        return EXIT_ARG_ERROR;
+    }
+
+    if(checkFile(argv[1]) == 0) {
+        printf("Error: Bad filename\n");
+        return EXIT_FILE_ERROR;
+    }
 
     checkFile(Filename);
 
@@ -214,7 +229,6 @@ int main(int argc, char *argv[]) { //MAIN FUNCTION
     int width;
     Maze *maze = malloc(sizeof(maze));
 
-    Coordinates player = (*maze).start;
 
     free((*maze).map);
     free(maze);
@@ -252,7 +266,7 @@ int main(int argc, char *argv[]) { //MAIN FUNCTION
             break;
         case 'm':
         case 'M':
-            ShowMaze(maze);
+            ShowMaze(maze, player);
             break;
         case 'q':
         case 'Q':

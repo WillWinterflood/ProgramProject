@@ -194,6 +194,7 @@ else
     echo "PASS"
 fi
 
+rm -f tmp
 
 
 
