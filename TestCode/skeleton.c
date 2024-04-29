@@ -32,33 +32,17 @@ int checkFile(const char *Filename){
 
     FILE *file = fopen (Filename, "r");
     if (file == NULL) {
-        fprintf(stderr, "Unable to open file\n"); //Checking whether the file is available
+        fprintf(stderr, "1Unable to open file\n"); //Checking whether the file is available
     }
 // Open the file and run the error checkers to see whether there is anything wrong with the file 
 //  that is being tested
 
     char ch;
-    int height = 0;
-    int lineLength = 0;
-    int width = 0;
     int startCount = 0;
     int endCount = 0;
 
 
     while((ch = fgetc(file)) != EOF) {
-        if (ch != '\n') {
-            lineLength++;
-        }
-        else {
-            width = lineLength;
-            //if (lineLength != width) {
-                //fprintf(stderr, "Error: Inconsistent width of maze\n");
-
-            //}
-            height++;
-            lineLength = 0;
-
-        }
 
 
         if (ch != '#' && ch != 'S' && ch != 'E' && ch != ' ' && ch != '\n') {
@@ -84,7 +68,7 @@ int checkFile(const char *Filename){
         fclose(file);
         return 0;
     }
-    //fclose(file);
+
 
 
     return 1;
@@ -92,6 +76,41 @@ int checkFile(const char *Filename){
     
 // This checks errors such as the maze is between 5 and 100 characters in each dimension
 //Before that is checks that the file is valid and does exist 
+}
+
+int fileCount (const char *Filename, int *width, int *height) {
+
+    FILE *file = fopen (Filename, "r");
+    if (file == NULL) {
+        fprintf(stderr, "2Unable to open file\n"); //Checking whether the file is available
+
+    }
+
+
+    char ch;
+    
+    int lineLength = 0;
+    
+    while((ch = fgetc(file)) != EOF) {
+        if (ch != '\n') {
+            lineLength++;
+        }
+        else {
+            *width = lineLength;
+            if (lineLength != *width) {
+                fprintf(stderr, "Error: Inconsistent width of maze\n");
+
+            }
+            lineLength = 0;
+        }
+    }
+
+    rewind(file);
+    int lineBuffer = 100;
+    char line[lineBuffer];
+    while(fgets(line,lineBuffer,file) != NULL) {
+        *height++;
+    }
 }
 
 int InitialiseMaze (Maze *maze, int height, int width, char *Filename) { //THIS ALLOCATES MEMORY FOR THE FILE
@@ -142,7 +161,7 @@ int InitialiseMaze (Maze *maze, int height, int width, char *Filename) { //THIS 
     }
     if (height < MinDim || height > MaxDim || width < MinDim || width > MaxDim) {
         perror("Error: Dimensions are either too big or too small! \n");
-        fclose(file);
+
         return 0;
     }
     
@@ -222,15 +241,18 @@ int main(int argc, char *argv[]) { //MAIN FUNCTION
     char Filename[100];
     Coordinates *player;
     char move;
-    int height = 5;
-    int width = 30;
+    int height;
+    int width;
 
     if (argc != 2) {
         printf("Usage: %s <filename>\n", argv[0]);
         return EXIT_ARG_ERROR;
     }
 
+
     strcpy(Filename, argv[1]);
+    fileCount(Filename, &width, &height);
+    printf("height%d width%d\n",height,width);
 
     if(checkFile(argv[1]) == 0) {
         printf("Error: Bad filename\n");
