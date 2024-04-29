@@ -78,46 +78,80 @@ int checkFile(const char *Filename){
 //Before that is checks that the file is valid and does exist 
 }
 
-int fileCount (const char *Filename, int *width, int *height) {
+int fileCount (const char *Filename, int *width, int *height, Maze *maze) {
 
     FILE *file = fopen (Filename, "r");
     if (file == NULL) {
-        fprintf(stderr, "2Unable to open file\n"); //Checking whether the file is available
-
+        fprintf(stderr, "Unable to open file\n"); //Checking whether the file is available
+        return 0;
     }
 
 
     char ch;
     
-    int lineLength = 0;
+  
+    int currentWidth = 0;
+    int currentHeight = 0;
+    int maxWidth = 0;
     
     while((ch = fgetc(file)) != EOF) {
+
         if (ch != '\n') {
+            
+            if(ch == '#' || ch == 'S' || ch == 'E' || ch == ' ') {
+                currentWidth++;
+             }
+            else {
+                fprintf(stderr, "Not right chars in file");
+                return 0;
+        
+            }
+            
+        }
+        else {
+            currentHeight++;
+            currentWidth = maxWidth;
+        }
+        
+
+     
+       /* if (ch != '\n') {
             lineLength++;
+            maze->map[row][column] = ch;
+            column++;
         }
         else {
             *width = lineLength;
+            row++;
             if (lineLength != *width) {
                 fprintf(stderr, "Error: Inconsistent width of maze\n");
 
-            }
+            
             lineLength = 0;
+            currentHeight++;
         }
     }
-
-    rewind(file);
-    int lineBuffer = 100;
-    char line[lineBuffer];
-    while(fgets(line,lineBuffer,file) != NULL) {
-        *height++;
+    *height = currentHeight;*/
     }
+
+   *width = currentWidth;
+   *height = currentHeight;
+
+   printf("h: %d, w: %d\n", *height, *width);
+
+   
+
+    fclose(file);
+    return 1;
 }
+
 
 int InitialiseMaze (Maze *maze, int height, int width, char *Filename) { //THIS ALLOCATES MEMORY FOR THE FILE
 
-    FILE *file = fopen(Filename, "r");
+    FILE *file = fopen("CORRECT1.txt", "r");
     if (file == NULL) {
-        fprintf(stderr, "Unable to open file\n");
+        fprintf(stderr, "1Unable to open file\n");
+        fclose(file);
         return 0;
     }
 
@@ -130,6 +164,7 @@ int InitialiseMaze (Maze *maze, int height, int width, char *Filename) { //THIS 
     int i;
     for (i = 0; i < height; i++) {
         maze->map[i] = (char *)malloc(width * sizeof(char));
+
       
     }
   
@@ -234,25 +269,28 @@ void ShowMaze(Maze *maze, Coordinates *player) {
                 printf("%c", (*maze).map[y][x]);
         }   }
         printf("\n");
+        
+
     }
 }
 
 int main(int argc, char *argv[]) { //MAIN FUNCTION
     char Filename[100];
-    Coordinates *player;
+    Coordinates player;
     char move;
     int height;
     int width;
+    Maze maze;
 
     if (argc != 2) {
         printf("Usage: %s <filename>\n", argv[0]);
         return EXIT_ARG_ERROR;
     }
 
-
+    InitialiseMaze(&maze, height, width, Filename);
     strcpy(Filename, argv[1]);
-    fileCount(Filename, &width, &height);
-    printf("height%d width%d\n",height,width);
+    fileCount(Filename, &width, &height, &maze);
+    printf("height%d width%d\n", height, width);
 
     if(checkFile(argv[1]) == 0) {
         printf("Error: Bad filename\n");
@@ -261,74 +299,78 @@ int main(int argc, char *argv[]) { //MAIN FUNCTION
 
     checkFile(Filename);
 
-    Maze maze;
+
     if (!InitialiseMaze(&maze, height, width, Filename)) {
         printf("Error Initialising the maze");
         return EXIT_MAZE_ERROR;
     }
 
-
+   
+    
     GameControls();
+    printf("hello\n");
+    ShowMaze(&maze, &player);
+
+    player.x = maze.start.x;
+    player.y = maze.start.y;
+
+    while (1) {
+        printf("Enter your move, (Press M for help): ");
+        scanf("%c", &move);
+        move = getchar();
 
 
-    printf("Enter your moves, (Press M for help): ");
-    scanf("%c", &move);
+        int x = player.x;
+        int y = player.y;
 
 
-    int x;
-    int y;
-
-
-    x = maze.start.x;
-    y = maze.start.y;
-
-    switch (move) {
-        case 'W':
-        case 'w':
-            y += 1;
+        switch (move) {
+            case 'W':
+            case 'w':
+                y += 1;
+                break;
+            case 'A':
+            case 'a':
+                x -= 1;
+                break;
+            case 'S':
+            case 's':
+                y -= 1;
+                break;
+            case 'D':
+            case 'd':
+                x += 1;
+                break;
+            case 'm':
+            case 'M':
+                ShowMaze(&maze, &player);
+                break;
+            case 'q':
+            case 'Q':
+            return EXIT_SUCCESS;
             break;
-        case 'A':
-        case 'a':
-            x -= 1;
-            break;
-        case 'S':
-        case 's':
-            y -= 1;
-            break;
-        case 'D':
-        case 'd':
-            x += 1;
-            break;
-        case 'm':
-        case 'M':
-            ShowMaze(&maze, player);
-            break;
-        case 'q':
-        case 'Q':
-        return EXIT_SUCCESS;
-        break;
-        default:
-            printf("Invlaid move!\n");
-            return 0;
-            
+            default:
+                printf("Invlaid move!\n");
+                return 0;
+                
 
-        }
+            }
+
 
         if (x < 0 || y < 0 || x >= maze.width || y >= maze.height || maze.map[y][x] == '#') {
             printf("Error: Invalid move\n");
         }
+    
         if (x == maze.end.x && y == maze.end.y) {
             printf("Congrats, you have made it through!\n");
             return EXIT_SUCCESS;
         }
+    }
 
-        for (int i = 0; i < maze.height; i++) {
-           freeMaze(&maze);
-        }
-
-
-   
-
+    for (int i = 0; i < maze.height; i++) {
+       freeMaze(&maze);
+    }
+    
     return EXIT_SUCCESS;
 
 /* Checking the maze is correct aswell as the file being correct is going to be called in thr main fucntion. 
