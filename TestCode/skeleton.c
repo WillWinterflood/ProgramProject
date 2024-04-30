@@ -148,10 +148,9 @@ int fileCount (const char *Filename, int *width, int *height, Maze *maze) {
 
 int InitialiseMaze (Maze *maze, int height, int width, char *Filename) { //THIS ALLOCATES MEMORY FOR THE FILE
 
-    FILE *file = fopen("CORRECT1.txt", "r");
+    FILE *file = fopen (Filename, "r");
     if (file == NULL) {
-        fprintf(stderr, "1Unable to open file\n");
-        fclose(file);
+        fprintf(stderr, "Unable to open file\n"); //Checking whether the file is available
         return 0;
     }
 
@@ -223,7 +222,7 @@ void freeMaze (Maze *maze) {
     }
 
     free(maze);
-    maze = NULL;
+    
 }
 
 
@@ -254,29 +253,32 @@ int CheckMove(char move) { //THIS DEFINES EACH MOVE AND IF THE USER PUTS IN A WR
 void ShowMaze(Maze *maze, Coordinates *player) {
 
     printf("\n");
+   // while ((ch = fgetc(file)) != EOF) {
 
-    for (int y = 0; y < (*maze).height; y++) {
+        for (int y = 0; y < (*maze).height; y++) {
 
-        for (int x = 0; x < (*maze).width; x++) {
+            for (int x = 0; x < (*maze).width; x++) {
 
-            if (player->x == x && player->y == y) {
+                if (player->x == x && player->y == y) {
 
-                printf("X");
+                    printf("X");
 
+                }
+                else { 
+
+                    printf("%c", (*maze).map[y][x]);
+                }   
             }
-            else { 
-
-                printf("%c", (*maze).map[y][x]);
-        }   }
-        printf("\n");
-        
+            
+        //}     
 
     }
+    
 }
 
 int main(int argc, char *argv[]) { //MAIN FUNCTION
     char Filename[100];
-    Coordinates player;
+    Coordinates *player;
     char move;
     int height;
     int width;
@@ -287,17 +289,20 @@ int main(int argc, char *argv[]) { //MAIN FUNCTION
         return EXIT_ARG_ERROR;
     }
 
-    InitialiseMaze(&maze, height, width, Filename);
+
     strcpy(Filename, argv[1]);
-    fileCount(Filename, &width, &height, &maze);
-    printf("height%d width%d\n", height, width);
+    
 
     if(checkFile(argv[1]) == 0) {
         printf("Error: Bad filename\n");
         return EXIT_FILE_ERROR;
     }
 
-    checkFile(Filename);
+
+    InitialiseMaze(&maze, height, width, Filename);
+  
+    fileCount(Filename, &width, &height, &maze);
+    printf("height%d width%d\n", height, width);
 
 
     if (!InitialiseMaze(&maze, height, width, Filename)) {
@@ -307,17 +312,18 @@ int main(int argc, char *argv[]) { //MAIN FUNCTION
 
    
     
-    GameControls();
     printf("hello\n");
     ShowMaze(&maze, &player);
+    GameControls();
+   
 
     player.x = maze.start.x;
     player.y = maze.start.y;
 
     while (1) {
-        printf("Enter your move, (Press M for help): ");
-        scanf("%c", &move);
-        move = getchar();
+        printf("Enter your move, (Press M for help):\n");
+        scanf(" %c", &move);
+
 
 
         int x = player.x;
@@ -351,9 +357,8 @@ int main(int argc, char *argv[]) { //MAIN FUNCTION
             break;
             default:
                 printf("Invlaid move!\n");
-                return 0;
+                continue;
                 
-
             }
 
 
