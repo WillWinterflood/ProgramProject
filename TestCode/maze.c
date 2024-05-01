@@ -151,6 +151,9 @@ void CheckMove(char move, Coordinates *player, Maze *maze) { //THIS DEFINES EACH
                 player->y == 0;
 
             }
+            else if (maze->map[player->x][player->y - 1] < maze->width) {
+                printf("OUT OF BOUNDS\n");
+            }
             else {
                 
                 player->y -= 1;
@@ -165,6 +168,7 @@ void CheckMove(char move, Coordinates *player, Maze *maze) { //THIS DEFINES EACH
             player->x == 0;
 
         }
+       
         else {
                 
             player->x -= 1;
@@ -181,6 +185,9 @@ void CheckMove(char move, Coordinates *player, Maze *maze) { //THIS DEFINES EACH
                 player->x == 0;
 
             }
+            else if (maze->map[player->x + 1][player->y] < maze->height) {
+                printf("OUT OF BOUNDS\n");
+            }
             else {
                 
                 player->x += 1;
@@ -193,6 +200,9 @@ void CheckMove(char move, Coordinates *player, Maze *maze) { //THIS DEFINES EACH
                 printf("Cant go into a wall, try another move!\n");
                 player->y == 0;
 
+            }
+            else if (maze->map[player->x][player->y + 1] > maze->width) {
+                printf("OUT OF BOUNDS\n");
             }
             else {
                 
