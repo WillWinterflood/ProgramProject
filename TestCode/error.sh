@@ -18,9 +18,9 @@ fi
 
 echo -n "Testing if too many arguments have been entered - "
 if grep -q "Error: Too many arguments entered" tmp; then
-    echo "PASS"
-else 
     echo "FAIL"
+else 
+    echo "PASS"
     cat tmp
 fi
 
