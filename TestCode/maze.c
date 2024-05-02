@@ -108,7 +108,7 @@ void InitialiseMaze (Maze *maze, Coordinates *player) {
 
 void allocateMemory (Maze *maze) {
 
-    //These lines were inspiration of https://chat.openai.com/share/cadbd38c-2d4a-49a0-9dc9-c46898a56129
+    //These lines were inspiration from this question about mallocs https://chat.openai.com/share/cadbd38c-2d4a-49a0-9dc9-c46898a56129
 
     maze->map = (char **)malloc(MaxDim * sizeof(char *)); 
 
@@ -162,18 +162,22 @@ void CheckMove(char move, Coordinates *player, Maze *maze) { //THIS DEFINES EACH
             break;
         case 'w':
         case 'W':
-        if ((maze->map[player->x - 1][player->y]) == '#' ) {
+            if ((maze->map[player->x - 1][player->y]) == '#' ) {
 
-            printf("Cant go into a wall, try another move!\n");
-            player->x == 0;
+                printf("Cant go into a wall, try another move!\n");
+                player->x == 0;
 
-        }
+            }
+            else if (player->x - 1 > maze->height) {
+                printf("OUT OF BOUNDS\n");
+           
+            }
        
-        else {
+            else {
                 
-            player->x -= 1;
+                player->x -= 1;
             
-        } 
+            } 
             break;
         
         
@@ -187,6 +191,7 @@ void CheckMove(char move, Coordinates *player, Maze *maze) { //THIS DEFINES EACH
             }
             else if (maze->map[player->x + 1][player->y] < maze->height) {
                 printf("OUT OF BOUNDS\n");
+                player->x == 0;
             }
             else {
                 
@@ -201,11 +206,12 @@ void CheckMove(char move, Coordinates *player, Maze *maze) { //THIS DEFINES EACH
                 player->y == 0;
 
             }
-            else if (maze->map[player->x][player->y + 1] > maze->width) {
-                printf("OUT OF BOUNDS\n");
+            else if (player->y + 1 > maze->width) {
+                printf("Out of bounds\n");
+                player->y + 1 == -1;
             }
+    
             else {
-                
                 player->y += 1;
             
             } 
@@ -276,10 +282,16 @@ int main(int argc, char *argv[]) { //MAIN FUNCTION
     while (1) {
 
         printf("Enter moves: W,A,S,D... Q to quit and M to show map...\n");
-        ShowMaze(&maze, &player);
 
         printf("Enter move: ");
         scanf(" %c", &move);
+
+        if (move == 'm') {
+            ShowMaze(&maze, &player);
+        }
+        else if (move == 'M') {
+            ShowMaze(&maze, &player);
+        }
 
   
         CheckMove(move, &player, &maze);
