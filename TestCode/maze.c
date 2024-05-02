@@ -162,7 +162,7 @@ void CheckMove(char move, Coordinates *player, Maze *maze) { //THIS DEFINES EACH
             break;
         case 'w':
         case 'W':
-            if ((maze->map[player->x - 1][player->y]) == '#' ) {
+            if ((maze->map[player->x - 1][player->y]) == '#') {
 
                 printf("Cant go into a wall, try another move!\n");
                 player->x == 0;
